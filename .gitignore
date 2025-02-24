@@ -4,7 +4,6 @@
 
 # Go modules
 vendor/
-go.sum
 
 # IDE/editor specific files
 .vscode/
