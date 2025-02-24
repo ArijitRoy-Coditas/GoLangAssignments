@@ -1,0 +1,18 @@
+# Go build artifacts
+*.exe
+*.out
+
+# Go modules
+vendor/
+go.sum
+
+# IDE/editor specific files
+.vscode/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
