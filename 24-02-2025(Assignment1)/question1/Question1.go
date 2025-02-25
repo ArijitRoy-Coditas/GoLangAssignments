@@ -3,13 +3,17 @@
 package question1
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"os"
+	"strconv"
 	"time"
 )
 
 type Person struct{
 	name string
-	age int 
+	age uint64
 }
 
 func (P *Person) Intro() {
@@ -17,26 +21,33 @@ func (P *Person) Intro() {
 	fmt.Printf("I'm %v year old.\n",P.age)
 }
 
-func IsValidAgeInput() int {
-	var newAge int
+func GetUserInput(message string) string {
+	fmt.Println(message)
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	return scanner.Text()
+}
+
+func IsValidAgeInput() uint64 {
+	var newAge uint64
+	var input string
 	//Infinite loop which only exits when a valid input is given which is integer in this case.
 	for {
-		fmt.Print("Please enter your new age: ")
-		_, err := fmt.Scanf("%d",&newAge)
-		if err == nil {
-			fmt.Scanln()
-			break
+		input = GetUserInput("Please enter your new age: ")
+		if input == "" {
+			log.Println("Age cannot be empty")
+			continue
 		}
-		fmt.Printf("Invalid input %v.\n",err)
-		//Dump variable is used to consume and clear the input buffer.
-		var dump string
-		fmt.Scanln(&dump)
+
+		newAge, _ = strconv.ParseUint(input, 10, 64)
+		break
 	}
+
 	return newAge
 }
 
-func AgeInput() int{
-	var ageInput int
+func AgeInput() uint64 {
+	var ageInput uint64
 	//Assign value and validate if the user input value is an integer type and more than zero
 	if ageInput = IsValidAgeInput(); ageInput > 0 {
 		return ageInput
@@ -46,15 +57,15 @@ func AgeInput() int{
 }
 
 func (P *Person) UpdateAge() {
-	var newAge int = AgeInput()
+	var newAge uint64 = AgeInput()
 
 	if newAge == P.age {
-		fmt.Println("No changes made to the age")
+		log.Println("No changes made to the age")
 		return
 	}
 
 	if newAge < P.age {
-		fmt.Printf("Age must be greater than current age: %v\n",P.age)
+		log.Printf("Age must be greater than current age: %v\n",P.age)
 		return
 	}
 
@@ -63,7 +74,7 @@ func (P *Person) UpdateAge() {
 	fmt.Printf("Your new age is: %v\n",P.age)
 }
 
-func IsEligible(age int) (int, bool) {
+func IsEligible(age uint64) (uint64, bool) {
 	return age, age >= 18
 }
 

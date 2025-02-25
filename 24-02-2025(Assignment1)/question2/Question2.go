@@ -5,15 +5,18 @@ package question2
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
+
 	"github.com/olekukonko/tablewriter"
 )
 
 type employee struct {
 	name string
-	age int
+	age uint
 	salary float64
 }
 
@@ -22,25 +25,116 @@ type department struct {
 	employees []employee
 }
 
-func NewEmployeeDetails() []string {
+func GetUserInput(message string) string {
+	fmt.Println(message)
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println("Enter the name of the new employee")
 	scanner.Scan()
-	name := scanner.Text()
-	fmt.Println("Enter the age of the new employee")
-	scanner.Scan()
-	age := scanner.Text()
-	fmt.Println("Enter the salary of the new employee")
-	scanner.Scan()
-	salary := scanner.Text()
-	return []string{name,age,salary}
+	return scanner.Text()
+}
+
+func GetUserID(d *department, message string) uint64 {
+	var input string
+	var empID uint64
+
+	for {
+		input = GetUserInput(message)
+		if input == "" {
+			log.Println("Employee ID cannot be empty")
+			continue
+		}
+
+		if strings.HasPrefix(input, "-"){
+			log.Println("Employee ID cannot be negative")
+			continue
+		}
+
+		var err error
+		empID, err = strconv.ParseUint(input, 10, 64)
+		if err != nil {
+			log.Println("Invalid employee ID:", err)
+			continue
+		}
+
+		if empID < 1 || int(empID) > len(d.employees) {
+			log.Printf("Employee ID %v does not exist. Try again.", empID)
+			continue
+		}
+		break
+	}
+
+	return empID
+}
+
+func NewEmployeeDetails() []string {
+	var name string
+    for {
+        name = GetUserInput("Enter the name of the new employee:")
+        if _, err := strconv.Atoi(name); err == nil {
+            log.Println("Employee name cannot be a number.")
+        } else {
+            break
+        }
+    }
+
+    // Get and validate the employee's age
+    var age uint64
+    for {
+        input := GetUserInput("Enter the age of the new employee:")
+        if strings.HasPrefix(input, "-") {
+            log.Println("Age cannot be negative.")
+            continue
+        }
+
+		if input == "0" {
+			log.Println("Age cannot be zero")
+			continue
+		}
+
+        var err error
+        age, err = strconv.ParseUint(input, 10, 32)
+        if err != nil {
+            log.Println("Invalid age:", err)
+            continue
+        }
+        break
+    }
+
+    // Get and validate the employee's salary
+    var salary float64
+    for {
+        input := GetUserInput("Enter the salary of the new employee:")
+        if strings.HasPrefix(input, "-") {
+            log.Println("Salary cannot be negative.")
+            continue
+        }
+
+		if input == "0" {
+			log.Println("Salary cannot be zero")
+			continue
+		}
+        var err error
+        salary, err = strconv.ParseFloat(input, 64)
+        if err != nil {
+            log.Println("Invalid salary:", err)
+            continue
+        }
+        break
+    }
+
+	return []string{name,fmt.Sprintf("%d",age),fmt.Sprintf("%.2f",salary)}
 }
 
 func (d *department) AddEmployee() {
-	empDetails := NewEmployeeDetails()
-	age, _ := strconv.Atoi(empDetails[1])
+	var empDetails []string
+	empDetails = NewEmployeeDetails()
+	if empDetails == nil {
+		log.Println("Employee details were not valid. Employee not added...")
+		empDetails = NewEmployeeDetails()
+	}
+
+	age, _ := strconv.ParseUint(empDetails[1], 10, 32)
 	salary, _ := strconv.ParseFloat(empDetails[2],64)
-	d.employees = append(d.employees, employee{empDetails[0], age, salary})
+	d.employees = append(d.employees, employee{empDetails[0], uint(age), salary})
 	fmt.Println("Hang on! we are adding new employee details...")
 	time.Sleep(time.Millisecond * 1500)
 	EmployeeDetails(d)
@@ -48,15 +142,11 @@ func (d *department) AddEmployee() {
 }
 
 func (d *department) RemoveEmployee() {
-	var empID int
-	fmt.Printf("Enter the employee ID whose record you want to delete: ")
-	_, err := fmt.Scanln(&empID)
-	if err != nil {
-		fmt.Println("Invalid response ",err)
-	}
+	empID := GetUserID(d, "Enter the employee ID whose record you want to delete: ")
+	
 	var newEmpDetails []employee
 	for ID, eachEmp := range d.employees {
-		if ID+1 != empID {
+		if ID+1 != int(empID) {
 			newEmpDetails = append(newEmpDetails, eachEmp)
 		}
 	}
@@ -86,22 +176,17 @@ func EmployeeDetails(d *department){
 
 
 func (d *department) GiveRaise() {
-	var empID int
-	fmt.Printf("Enter the employee ID whom you want to give raise: ")
-	_, err := fmt.Scanln(&empID)
-	if err != nil {
-		fmt.Println("Invalid response ",err)
-	}
 
+	empID := GetUserID(d, "Enter the employee ID whom you want to give raise: ")
 
 	newSalary := 0.0
 	fmt.Printf("Enter the raise amount you want to give for the empID%v: ",empID)
 	fmt.Scanln(&newSalary)
 	var newEmpDetails []employee
 	for ID, eachEmp := range d.employees {
-		if ID+1 == empID {
+		if ID+1 == int(empID) {
 			if newSalary < eachEmp.salary {
-				fmt.Printf("Raise amount need to be higher than old amount %v\n",eachEmp.salary)
+				log.Printf("Raise amount need to be higher than old amount %v\n",eachEmp.salary)
 				return
 			} else {
 				eachEmp.salary = newSalary
