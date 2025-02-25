@@ -1,7 +1,4 @@
-/*
-Question 1: Implement a Person struct in Go to represent individuals with attributes like name and age.
-Include methods for introducing themselves, updating their age, and checking if they are eligible to vote.
-*/
+// Refer to the Questions.md for more detail
 
 package question1
 
@@ -56,6 +53,11 @@ func (P *Person) UpdateAge() {
 		return
 	}
 
+	if newAge < P.age {
+		fmt.Printf("Age must be greater than current age: %v\n",P.age)
+		return
+	}
+
 	P.age = newAge
 	time.Sleep(time.Millisecond * 800)
 	fmt.Printf("Your new age is: %v\n",P.age)
@@ -66,11 +68,11 @@ func IsEligible(age int) (int, bool) {
 }
 
 func (P *Person) Vote() {
-	if age, eligible := IsEligible(P.age); eligible {
+	if _, eligible := IsEligible(P.age); eligible {
 		fmt.Println("You're eligible for vote")
 	} else {
 		fmt.Println("You're not eligible for vote.")
-		age = 18 - P.age
+		age := 18 - P.age
 		years := ""
 		if age > 1 {
 			years = "years"
