@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -69,8 +68,13 @@ func NewEmployeeDetails() []string {
 	var name string
     for {
         name = GetUserInput("Enter the name of the new employee:")
+		if name == "" {
+			log.Println("Name cannot be empty")
+			continue
+		}
         if _, err := strconv.Atoi(name); err == nil {
             log.Println("Employee name cannot be a number.")
+			continue
         } else {
             break
         }
