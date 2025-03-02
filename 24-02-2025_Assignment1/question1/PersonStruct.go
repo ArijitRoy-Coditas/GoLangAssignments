@@ -11,29 +11,29 @@ import (
 	"time"
 )
 
-type Person struct{
+type Person struct {
 	name string
-	age uint64
+	age  uint64
 }
 
-func (P *Person) Intro() {
+func (P *Person) intro() {
 	fmt.Printf("Hi my name is %v and ", P.name)
-	fmt.Printf("I'm %v year old.\n",P.age)
+	fmt.Printf("I'm %v year old.\n", P.age)
 }
 
-func GetUserInput(message string) string {
+func getUserInput(message string) string {
 	fmt.Println(message)
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text()
 }
 
-func IsValidAgeInput() uint64 {
+func isValidageInput() uint64 {
 	var newAge uint64
 	var input string
 	//Infinite loop which only exits when a valid input is given which is integer in this case.
 	for {
-		input = GetUserInput("Please enter your new age: ")
+		input = getUserInput("Please enter your new age: ")
 		if input == "" {
 			log.Println("Age cannot be empty")
 			continue
@@ -46,18 +46,18 @@ func IsValidAgeInput() uint64 {
 	return newAge
 }
 
-func AgeInput() uint64 {
+func ageInput() uint64 {
 	var ageInput uint64
 	//Assign value and validate if the user input value is an integer type and more than zero
-	if ageInput = IsValidAgeInput(); ageInput > 0 {
+	if ageInput = isValidageInput(); ageInput > 0 {
 		return ageInput
 	}
 
 	return ageInput
 }
 
-func (P *Person) UpdateAge() {
-	var newAge uint64 = AgeInput()
+func (P *Person) updateAge() {
+	var newAge uint64 = ageInput()
 
 	if newAge == P.age {
 		log.Println("No changes made to the age")
@@ -65,21 +65,21 @@ func (P *Person) UpdateAge() {
 	}
 
 	if newAge < P.age {
-		log.Printf("Age must be greater than current age: %v\n",P.age)
+		log.Printf("Age must be greater than current age: %v\n", P.age)
 		return
 	}
 
 	P.age = newAge
 	time.Sleep(time.Millisecond * 800)
-	fmt.Printf("Your new age is: %v\n",P.age)
+	fmt.Printf("Your new age is: %v\n", P.age)
 }
 
-func IsEligible(age uint64) (uint64, bool) {
+func isEligible(age uint64) (uint64, bool) {
 	return age, age >= 18
 }
 
-func (P *Person) Vote() {
-	if _, eligible := IsEligible(P.age); eligible {
+func (P *Person) vote() {
+	if _, eligible := isEligible(P.age); eligible {
 		fmt.Println("You're eligible for vote")
 	} else {
 		fmt.Println("You're not eligible for vote.")
@@ -90,15 +90,15 @@ func (P *Person) Vote() {
 		} else {
 			years = "year"
 		}
-		fmt.Printf("After %v %v you will be eligible for vote.\n",age,years)
+		fmt.Printf("After %v %v you will be eligible for vote.\n", age, years)
 	}
 }
 
-func test(Intro, Update, Vote func() ){
+func test(intro, Update, vote func()) {
 	fmt.Println("========================================")
-	Intro()
+	intro()
 	Update()
-	Vote()
+	vote()
 	fmt.Println("========================================")
 	time.Sleep(time.Millisecond * 1000)
 }
@@ -106,32 +106,32 @@ func test(Intro, Update, Vote func() ){
 func Run() {
 	person1 := Person{
 		name: "Arijit Roy",
-		age: 22,
+		age:  22,
 	}
 	person2 := Person{
 		name: "Anirban Paul",
-		age: 23,
+		age:  23,
 	}
 	person3 := Person{
 		name: "HrishiRaj Modi",
-		age: 17,
+		age:  17,
 	}
 
 	test(
-		person1.Intro,
-		person1.UpdateAge,
-		person1.Vote,
+		person1.intro,
+		person1.updateAge,
+		person1.vote,
 	)
 
 	test(
-		person2.Intro,
-		person2.UpdateAge,
-		person2.Vote,
+		person2.intro,
+		person2.updateAge,
+		person2.vote,
 	)
 
 	test(
-		person3.Intro,
-		person3.UpdateAge,
-		person3.Vote,
+		person3.intro,
+		person3.updateAge,
+		person3.vote,
 	)
 }

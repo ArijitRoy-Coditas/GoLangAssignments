@@ -26,19 +26,19 @@ type department struct {
 	employees map[int]employee
 }
 
-func GetUserInput(message string) string {
+func getUserInput(message string) string {
 	fmt.Println(message)
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text()
 }
 
-func GetUserID(d *department, message string) uint64 {
+func getUserID(d *department, message string) uint64 {
 	var input string
 	var empID uint64
 
 	for {
-		input = GetUserInput(message)
+		input = getUserInput(message)
 		if input == "" {
 			log.Println("Employee ID cannot be empty")
 			continue
@@ -66,10 +66,10 @@ func GetUserID(d *department, message string) uint64 {
 	return empID
 }
 
-func NewEmployeeDetails() []string {
+func newEmployeeDetails() []string {
 	var name string
 	for {
-		name = GetUserInput("Enter the name of the new employee:")
+		name = getUserInput("Enter the name of the new employee:")
 		if name == "" {
 			log.Println("Name cannot be empty")
 			continue
@@ -85,7 +85,7 @@ func NewEmployeeDetails() []string {
 	// Get and validate the employee's age
 	var age uint64
 	for {
-		input := GetUserInput("Enter the age of the new employee:")
+		input := getUserInput("Enter the age of the new employee:")
 		if strings.HasPrefix(input, "-") {
 			log.Println("Age cannot be negative.")
 			continue
@@ -108,7 +108,7 @@ func NewEmployeeDetails() []string {
 	// Get and validate the employee's salary
 	var salary float64
 	for {
-		input := GetUserInput("Enter the salary of the new employee:")
+		input := getUserInput("Enter the salary of the new employee:")
 		if strings.HasPrefix(input, "-") {
 			log.Println("Salary cannot be negative.")
 			continue
@@ -130,12 +130,12 @@ func NewEmployeeDetails() []string {
 	return []string{name, fmt.Sprintf("%d", age), fmt.Sprintf("%.2f", salary)}
 }
 
-func (d *department) AddEmployee() {
+func (d *department) addEmployee() {
 	var empDetails []string
-	empDetails = NewEmployeeDetails()
+	empDetails = newEmployeeDetails()
 	if empDetails == nil {
 		log.Println("Employee details were not valid. Employee not added...")
-		empDetails = NewEmployeeDetails()
+		empDetails = newEmployeeDetails()
 	}
 
 	age, _ := strconv.ParseUint(empDetails[1], 10, 32)
@@ -154,8 +154,8 @@ func (d *department) AddEmployee() {
 
 }
 
-func (d *department) RemoveEmployee() {
-	empID := GetUserID(d, "Enter the employee ID whose record you want to delete: ")
+func (d *department) removeEmployee() {
+	empID := getUserID(d, "Enter the employee ID whose record you want to delete: ")
 
 	delete(d.employees, int(empID))
 
@@ -186,9 +186,9 @@ func EmployeeDetails(d *department) {
 	table.Render()
 }
 
-func (d *department) GiveRaise() {
+func (d *department) giveRaise() {
 
-	empID := GetUserID(d, "Enter the employee ID whom you want to give raise: ")
+	empID := getUserID(d, "Enter the employee ID whom you want to give raise: ")
 
 	newSalary := 0.0
 	for {
@@ -211,7 +211,7 @@ func (d *department) GiveRaise() {
 
 }
 
-func (d *department) AverageSalary() {
+func (d *department) averageSalary() {
 	sum := 0.0
 	count := 0.0
 	average := 0.0
@@ -235,10 +235,10 @@ func Run() {
 	}
 
 	EmployeeDetails(&department1)
-	department1.AddEmployee()
-	department1.RemoveEmployee()
-	department1.GiveRaise()
-	department1.AverageSalary()
+	department1.addEmployee()
+	department1.removeEmployee()
+	department1.giveRaise()
+	department1.averageSalary()
 
 	department2 := department{
 		name: "DotNet",
@@ -250,8 +250,8 @@ func Run() {
 	}
 
 	EmployeeDetails(&department2)
-	department2.AddEmployee()
-	department2.RemoveEmployee()
-	department2.GiveRaise()
-	department2.AverageSalary()
+	department2.addEmployee()
+	department2.removeEmployee()
+	department2.giveRaise()
+	department2.averageSalary()
 }
