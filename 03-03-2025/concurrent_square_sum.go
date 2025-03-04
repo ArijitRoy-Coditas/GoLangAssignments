@@ -7,33 +7,28 @@ import (
 	"os"
 	"strconv"
 	"sync"
-	"time"
 )
 
 func squareWorker(a int, sharedCh chan int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	fmt.Println("Square worker is working")
 	num := a * a
-	fmt.Println("Value stored in the shared channel", num)
+	fmt.Println("Value stored in the shared channel: ", num)
 	sharedCh <- num
 }
 
-func aggregateSquare(sharedCh chan int, maxLength int, wg *sync.WaitGroup) {
-	defer wg.Done()
+func aggregateSquare(sharedCh chan int, done chan struct{}) {
 	fmt.Println("Aggregate Square is working")
-	count := 0
 	sum := 0
 
-	for count < maxLength {
-		val := <-sharedCh
-		time.Sleep(time.Second)
-		fmt.Println("Values recieved from the shared channel: ", val)
+	for val := range sharedCh {
+		fmt.Println("Value recieved from the shared channel: ", val)
 		sum += val
-		count++
 	}
 	fmt.Println("=======================================")
 	fmt.Println("The sum of the square is: ", sum)
 	fmt.Println("=======================================")
+	close(done)
 }
 
 func getUserInput() int {
@@ -58,6 +53,7 @@ func main() {
 	fmt.Println("=======================================")
 	var wg sync.WaitGroup
 	result := make(chan int, len(squareList))
+	done := make(chan struct{})
 	wg.Add(len(squareList))
 
 	for _, num := range squareList {
@@ -69,8 +65,7 @@ func main() {
 		close(result)
 	}()
 
-	wg.Add(1)
-	go aggregateSquare(result, len(squareList), &wg)
-	wg.Wait()
+	go aggregateSquare(result, done)
+	<-done
 	fmt.Println("All function has executed!")
 }
