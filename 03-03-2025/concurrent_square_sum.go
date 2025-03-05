@@ -52,9 +52,9 @@ func main() {
 	}
 	fmt.Println("=======================================")
 	var wg sync.WaitGroup
-	result := make(chan int, len(squareList))
+	result := make(chan int, length)
 	done := make(chan struct{})
-	wg.Add(len(squareList))
+	wg.Add(length)
 
 	for _, num := range squareList {
 		go squareWorker(num, result, &wg)
